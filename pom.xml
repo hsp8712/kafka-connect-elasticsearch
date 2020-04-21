@@ -7,13 +7,14 @@
     <parent>
         <groupId>io.confluent</groupId>
         <artifactId>common</artifactId>
-        <version>6.0.0-SNAPSHOT</version>
+        <version>[6.0.0-0, 6.0.1-0)</version>
     </parent>
 
     <groupId>io.confluent</groupId>
     <artifactId>kafka-connect-elasticsearch</artifactId>
     <packaging>jar</packaging>
     <name>kafka-connect-elasticsearch</name>
+    <version>6.0.0-0</version>
     <organization>
         <name>Confluent, Inc.</name>
         <url>http://confluent.io</url>
@@ -47,6 +48,7 @@
         <test.containers.version>1.11.4</test.containers.version>
         <kafka.connect.maven.plugin.version>0.11.1</kafka.connect.maven.plugin.version>
         <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
+        <io.confluent.kafka-connect-elasticsearch.version>6.0.0-0</io.confluent.kafka-connect-elasticsearch.version>
     </properties>
 
     <repositories>
@@ -381,7 +383,7 @@
                             <dependency>
                                 <groupId>io.confluent</groupId>
                                 <artifactId>licenses</artifactId>
-                                <version>${project.version}</version>
+                                <version>${io.confluent.license-file-generator.version}</version>
                             </dependency>
                         </dependencies>
                     </plugin>
@@ -403,6 +405,7 @@
                                     <mainClass>io.confluent.licenses.LicenseFinder</mainClass>
                                     <arguments>
                                         <!-- Note use of development instead of package so we pick up all dependencies. -->
+                                        <!--TODO: fix these-->
                                         <argument>-i ${project.build.directory}/${project.build.finalName}-development/share/java/kafka-connect-elasticsearch</argument>
                                         <argument>-o ${project.basedir}/licenses</argument>
                                         <argument>-f</argument>
@@ -431,7 +434,7 @@
                             <dependency>
                                 <groupId>io.confluent</groupId>
                                 <artifactId>licenses</artifactId>
-                                <version>${project.version}</version>
+                                <version>${io.confluent.license-file-generator.version}</version>
                             </dependency>
                         </dependencies>
                     </plugin>
