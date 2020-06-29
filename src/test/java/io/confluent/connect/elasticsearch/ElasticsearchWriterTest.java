@@ -537,4 +537,22 @@ public class ElasticsearchWriterTest extends ElasticsearchSinkTestBase {
   private void verifySearchResults(Collection<?> records, String index) throws Exception {
     verifySearchResults(records, index, ignoreKey, ignoreSchema);
   }
+
+  @Test
+  public void getIndexNameByRecordTestFromHeader() {
+    SinkRecord record = new SinkRecord(
+        TOPIC, PARTITION, Schema.STRING_SCHEMA, null, Schema.STRING_SCHEMA, "",  0);
+    String indexName = "test-index";
+    record.headers().add("index", indexName, Schema.STRING_SCHEMA);
+    final ElasticsearchWriter writer = initWriter(client);
+    assertEquals(indexName, writer.getIndexNameByRecord(record));
+  }
+
+  @Test
+  public void getIndexNameByRecordTestFromTopic() {
+    SinkRecord record = new SinkRecord(
+        TOPIC, PARTITION, Schema.STRING_SCHEMA, null, Schema.STRING_SCHEMA, "",  0);
+    final ElasticsearchWriter writer = initWriter(client);
+    assertEquals(TOPIC, writer.getIndexNameByRecord(record));
+  }
 }
