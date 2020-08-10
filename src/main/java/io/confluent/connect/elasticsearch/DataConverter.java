@@ -179,11 +179,19 @@ public class DataConverter {
            + "+" + String.valueOf((int) record.kafkaPartition())
            + "+" + String.valueOf(record.kafkaOffset());
     } else {
-      id = convertKey(record.keySchema(), record.key());
+      // id = convertKey(record.keySchema(), record.key());
+      id = null;
     }
 
     final String payload = getPayload(record, ignoreSchema);
-    final Long version = ignoreKey ? null : record.kafkaOffset();
+    // final Long version = ignoreKey ? null : record.kafkaOffset();
+
+    // if version not null:
+    // JestElasticsearchClient.toIndexRequest will set version_type=external
+    // and id=null request will failed
+    // and report error: Validation Failed:
+    // 1: an id must be provided if version type or value are set
+    final Long version = null;
     return new IndexableRecord(new Key(index, type, id), payload, version);
   }
 

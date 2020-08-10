@@ -17,7 +17,10 @@ package io.confluent.connect.elasticsearch;
 
 import io.confluent.connect.elasticsearch.bulk.BulkProcessor;
 import org.apache.kafka.common.utils.SystemTime;
+import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.errors.ConnectException;
+import org.apache.kafka.connect.header.Header;
+import org.apache.kafka.connect.header.Headers;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -252,7 +255,7 @@ public class ElasticsearchWriter {
           sinkRecord.kafkaOffset()
       );
 
-      final String index = convertTopicToIndexName(sinkRecord.topic());
+      final String index = getIndexNameByRecord(sinkRecord);
       final boolean ignoreKey = ignoreKeyTopics.contains(sinkRecord.topic()) || this.ignoreKey;
       final boolean ignoreSchema =
           ignoreSchemaTopics.contains(sinkRecord.topic()) || this.ignoreSchema;
@@ -317,6 +320,33 @@ public class ElasticsearchWriter {
       );
       bulkProcessor.add(record, flushTimeoutMs);
     }
+  }
+
+  String getIndexNameByRecord(SinkRecord sinkRecord) {
+    String index = getIndexNameFromHeaders(sinkRecord.headers());
+    if (index == null) {
+      index = convertTopicToIndexName(sinkRecord.topic());
+    }
+    return index;
+  }
+
+  private String getIndexNameFromHeaders(Headers headers) {
+    Header header = headers.lastWithName("index");
+    if (header == null) {
+      return null;
+    }
+
+    Schema schema = header.schema();
+    if (schema == null || schema.type() != Schema.Type.STRING) {
+      return null;
+    }
+
+    Object value = header.value();
+    if (value == null) {
+      return null;
+    }
+
+    return value.toString();
   }
 
   /**
